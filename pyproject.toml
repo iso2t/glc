@@ -1,0 +1,26 @@
+[project]
+name = "glc"
+version = "0.1.0"
+description = "Count tracked files and lines in a Git working tree."
+readme = "README.rst"
+requires-python = ">=3.7"
+
+[project.scripts]
+glc = "glc.__main__:main"
+
+[tool.poetry]
+packages = [{ include = "glc", from = "src" }]
+include = ["poetry.lock", "src/glc.py", "tests/**/*.py"]
+
+[tool.poetry.group.bundle]
+optional = true
+
+[tool.poetry.group.bundle.dependencies]
+pyinstaller = [
+    { version = "^5.13.2", python = ">=3.7,<3.8" },
+    { version = "^6.0", python = ">=3.8,<3.16" },
+]
+
+[build-system]
+requires = ["poetry-core>=2.0,<3.0"]
+build-backend = "poetry.core.masonry.api"

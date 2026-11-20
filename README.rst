@@ -9,23 +9,49 @@ cannot read.
 Requirements
 ------------
 
-Python 3.7 or later and Git. Keep ``count_lines.py`` and ``line_stats.py`` in
-the same directory.
+The wheel and the source launcher run on Python 3.7 or later with Git on
+your ``PATH``. The development commands below use Poetry 2 with Python 3.10
+or later.
 
 Usage
 -----
 
-Run ``glc.py`` with Python. It scans the current directory by default.
-Pass a local repository path to scan a different directory.
+From the project root, install GLC and run it to scan the current directory.
+
+::
+
+    poetry install
+    poetry run glc
+
+To see the extension breakdown for another working tree, pass ``--types``
+and its path.
+
+::
+
+    poetry run glc --types /path/to/repo
+
+You can also run ``python src/glc.py`` directly from the checkout.
+
+Tests
+-----
+
+The integration test runs the installed command in a temporary Git repository.
+
+::
+
+    poetry run python -m unittest discover -s tests/integration
 
 Build
 -----
 
-Use `PyInstaller <https://pyinstaller.org/en/stable/>`_ to bundle GLC into a
-single executable. From the directory containing both Python files:
+Run ``poetry build`` to create a wheel and source distribution in ``dist/``.
+For a standalone executable, install the optional PyInstaller dependency
+and build from the project root.
 
-1. Install PyInstaller with ``python -m pip install pyinstaller``.
-2. Build with ``python -m PyInstaller --onefile --name glc glc.py``.
+::
+
+    poetry install --with bundle
+    poetry run pyinstaller --onefile --name glc src/glc.py
 
 The executable is ``dist/glc.exe`` on Windows or ``dist/glc`` on macOS and
 Linux. Build on the operating system where you plan to run it. The executable

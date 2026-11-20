@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from line_stats import LineStats, count_lines, list_tracked_files
+from glc.core.line_stats import LineStats, count_lines, list_tracked_files
 
 
 def print_report(stats: LineStats, show_types: bool) -> None:
@@ -37,7 +37,7 @@ def main() -> int:
         description="Count tracked files and lines in a Git working tree."
     )
     parser.add_argument(
-        "repo", nargs="?", type=Path, default=Path("../.."),
+        "repo", nargs="?", type=Path, default=Path("."),
         help="folder to scan (defaults to the current folder)",
     )
     parser.add_argument(
@@ -61,3 +61,7 @@ def main() -> int:
 
     print_report(count_lines(args.repo, files), args.types)
     return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
