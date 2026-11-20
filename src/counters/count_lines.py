@@ -37,7 +37,7 @@ def main() -> int:
         description="Count tracked files and lines in a Git working tree."
     )
     parser.add_argument(
-        "repo", nargs="?", type=Path, default=Path("."),
+        "repo", nargs="?", type=Path, default=Path("../.."),
         help="folder to scan (defaults to the current folder)",
     )
     parser.add_argument(
