@@ -1,7 +1,7 @@
 [project]
 name = "glc"
 version = "0.1.0"
-description = "Count tracked files and lines in a Git working tree."
+description = "Count tracked files and lines in a local or remote Git repository."
 readme = "README.rst"
 requires-python = ">=3.7"
 

@@ -32,9 +32,10 @@ def list_tracked_files(repo: Path) -> list[str]:
     ))
 
 
-def count_lines(repo: Path, files: Iterable[str]) -> LineStats:
-    """Read the working-tree files and collect totals and read errors."""
+def count_lines(repo: Path, files: Iterable[str], *, confine_symlinks: bool = False) -> LineStats:
+    """Count working-tree lines, optionally confining symlinks to the scanned folder."""
     stats = LineStats()
+    root = repo.resolve() if confine_symlinks else None
     for file_path in files:
         path = repo / file_path
         extension = path.suffix.lower() or "(no extension)"
@@ -42,6 +43,13 @@ def count_lines(repo: Path, files: Iterable[str]) -> LineStats:
         stats.files_by_type[extension] += 1
 
         try:
+            if root is not None:
+                try:
+                    path = path.resolve(strict=True)
+                    path.relative_to(root)
+                except (ValueError, RuntimeError):
+                    stats.skipped_files[file_path] = "path does not resolve inside the checkout"
+                    continue
             with path.open("r", encoding="utf-8", errors="replace") as file:
                 line_count = sum(1 for _ in file)
         except OSError as error:

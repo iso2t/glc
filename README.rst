@@ -1,10 +1,9 @@
 Git Line Counter (GLC)
 ======================
 
-A small Python tool that reports the number of tracked files and the total
-number of lines in a local Git repository. It counts lines from the working
-tree, including local edits and blank lines. It reports any tracked files it
-cannot read.
+A small Python tool that counts tracked files and lines in a local Git working
+tree or a repository cloned from a URL. It includes blank lines and local edits
+and reports any tracked files it cannot read.
 
 Requirements
 ------------
@@ -30,12 +29,34 @@ and its path.
 
     poetry run glc --types /path/to/repo
 
+Pass a Git URL for a one-off count. GLC makes a shallow clone of the default
+branch in a temporary directory and removes it after the scan.
+
+::
+
+    poetry run glc --types https://github.com/pallets/click.git
+
+To keep the checkout, give ``--keep`` a new or empty directory. Later, pass
+that path to count it again. Add ``--pull`` to fast-forward the current branch
+from its configured upstream before counting.
+
+::
+
+    poetry run glc https://github.com/pallets/click.git --keep ./click
+    poetry run glc ./click
+    poetry run glc ./click --pull
+
+If the pull fails, GLC reports the Git error and stops before counting. For
+URL and ``--pull`` scans, symbolic links that resolve outside the scanned
+folder are reported as skipped.
+
 You can also run ``python src/glc.py`` directly from the checkout.
 
 Tests
 -----
 
-The integration test runs the installed command in a temporary Git repository.
+The integration tests run the installed command against temporary Git
+repositories. They use local ``file://`` URLs to exercise cloning and pulling.
 
 ::
 
@@ -63,6 +84,12 @@ Flags
 ``-t``, ``--types``
     Show the share of tracked files and counted lines for each file extension.
     Extensions are grouped case-insensitively.
+
+``--keep DIR``
+    Keep a URL's shallow clone in ``DIR`` after counting.
+
+``--pull``
+    Run ``git pull --ff-only`` before counting a local working tree.
 
 ``-h``, ``--help``
     Show command-line help and exit.
