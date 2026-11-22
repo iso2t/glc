@@ -8,6 +8,7 @@ from pathlib import Path
 
 from glc.core.line_stats import LineStats, count_lines, list_tracked_files
 from glc.core.repository import cloned_repository, is_repo_url
+from glc.progress import ProgressBar
 
 
 def print_report(stats: LineStats, show_types: bool) -> None:
@@ -70,14 +71,21 @@ def main() -> int:
             parser.error(f"folder does not exist or is not a directory: {repo}")
         checkout = nullcontext(repo)
 
+    progress = ProgressBar(sys.stderr, "Cloning repository" if remote else "Listing tracked files")
     try:
-        with checkout as repo:
+        with progress, checkout as repo:
             if args.pull:
+                progress.update("Pulling latest changes")
                 subprocess.run(
                     ["git", "pull", "--ff-only"], cwd=repo, capture_output=True, check=True,
                 )
+            progress.update("Listing tracked files")
             files = list_tracked_files(repo)
-            stats = count_lines(repo, files, confine_symlinks=remote or args.pull)
+            stats = count_lines(
+                repo, progress.track_files(files), confine_symlinks=remote or args.pull,
+            )
+            if remote and args.keep is None:
+                progress.update("Removing temporary checkout")
     except subprocess.CalledProcessError as error:
         message = error.stderr.decode("utf-8", errors="replace").strip()
         print(f"git {error.cmd[1]} failed: {message}", file=sys.stderr)

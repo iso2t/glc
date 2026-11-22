@@ -63,6 +63,7 @@ class GlcCommandTests(unittest.TestCase):
         self.assertEqual(
             result.stdout.splitlines(), ["Total tracked files: 1", "Total lines: 2"]
         )
+        self.assertEqual(result.stderr, "")
 
     def test_url_counts_committed_lines_and_removes_temporary_clone(self):
         repo = self.make_origin()
